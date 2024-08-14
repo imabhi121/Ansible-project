@@ -1,0 +1,9 @@
+---
+- name: Install cifs-utils on linux group
+  hosts: linux
+  become: true
+  tasks:
+    - name: Install cifs-utils package
+      dnf:
+        name: cifs-utils
+        state: present

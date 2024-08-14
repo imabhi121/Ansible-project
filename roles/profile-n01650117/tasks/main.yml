@@ -1,0 +1,12 @@
+---
+- name: Add Ansible Block to /etc/profile
+  lineinfile:
+    path: /etc/profile
+    line: "#Test block added by Ansible……n01650117"
+    insertafter: EOF
+
+- name: Configure TMOUT in /etc/profile
+  lineinfile:
+    path: /etc/profile
+    line: "export TMOUT=1500"
+    insertafter: "#Test block added by Ansible……n01650117"

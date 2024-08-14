@@ -1,0 +1,42 @@
+---
+- name: Install Apache and MariaDB
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+
+  tasks:
+    - name: Install Apache web server
+      yum:
+        name: httpd
+        state: present
+      notify: 
+         - Start Apache
+         - Enable Apache
+
+    - name: Install MariaDB server
+      yum:
+        name: mariadb-server
+        state: present
+      notify: 
+          - Start MariaDB
+          - Enable MariaDB
+
+  handlers:
+    - name: Start Apache
+      systemd:
+        name: httpd
+        state: started
+
+    - name: Enable Apache
+      systemd:
+        name: httpd
+        enabled: yes
+
+    - name: Start MariaDB
+      systemd:
+        name: mariadb
+        state: started
+
+    - name: Enable MariaDB
+      systemd:
+        name: mariadb
+        enabled: yes

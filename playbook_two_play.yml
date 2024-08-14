@@ -1,0 +1,37 @@
+---
+- name: Copy /etc/issue to ansible-c-vm1 and set permissions
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+  tasks:
+    - name: Copy /etc/issue file
+      ansible.builtin.copy:
+        src: /etc/issue
+        dest: /etc/issue
+        owner: user4000
+        group: cloudadmins
+        mode: '0444'
+
+- name: Change timezone to America/Edmonton
+  hosts: linux
+  become: true
+  tasks:
+    - name: Set timezone to America/Edmonton
+      community.general.timezone:
+        name: America/Edmonton
+
+- name: Create devops group and user on ansible-c-vm2
+  hosts: n01650117-c-vm-1.eastus.cloudapp.azure.com
+  become: true
+  tasks:
+    - name: Create group devops
+      ansible.builtin.group:
+        name: devops
+        state: present
+
+    - name: Create user devops1 with UID 2500 and add to devops group
+      ansible.builtin.user:
+        name: devops1
+        uid: 2500
+        groups: devops
+        append: yes
+        state: present

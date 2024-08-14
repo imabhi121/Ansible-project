@@ -1,0 +1,13 @@
+---
+- name: Conditionally install nmap package
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+  vars:
+    packages: nmap
+
+  tasks:
+    - name: Install "{{ packages }}" software
+      yum:
+        name: "{{ packages }}"
+        state: latest
+      when: packages is defined

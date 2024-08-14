@@ -1,0 +1,69 @@
+---
+- name: Install Parted Package
+  yum:
+    name: parted
+    state: present
+
+- name: Locate 10GB Disk
+  shell: "lsblk -b -o NAME,SIZE | grep ' 10737418240' | awk '{print $1}'"
+  register: datadisk_device
+  changed_when: false
+
+- name: Define datadisk_device Variable
+  set_fact:
+    datadisk_device: "/dev/{{ datadisk_device.stdout }}"
+  when: datadisk_device.stdout is defined
+
+- name: Initialize Partition Table on Disk
+  command: "parted {{ datadisk_device }} mklabel gpt"
+  when: datadisk_device is defined
+  args:
+    creates: "{{ datadisk_device }}1"
+
+- name: Create Primary Partition 1
+  command: "parted {{ datadisk_device }} mkpart primary xfs 0% {{ part1_size }}"
+  args:
+    creates: "{{ datadisk_device }}1"
+
+- name: Create Primary Partition 2
+  command: "parted {{ datadisk_device }} mkpart primary ext4 {{ part1_size }} 100%"
+  args:
+    creates: "{{ datadisk_device }}2"
+
+- name: Format Partition 1 as XFS
+  filesystem:
+    fstype: xfs
+    dev: "{{ datadisk_device }}1"
+    force: true
+
+- name: Format Partition 2 as EXT4
+  filesystem:
+    fstype: ext4
+    dev: "{{ datadisk_device }}2"
+    force: true
+
+- name: Establish Mount Point for Partition 1
+  file:
+    path: "{{ part1_mount }}"
+    state: directory
+
+- name: Establish Mount Point for Partition 2
+  file:
+    path: "{{ part2_mount }}"
+    state: directory
+
+- name: Persistently Mount Partition 1
+  mount:
+    path: "{{ part1_mount }}"
+    src: "{{ datadisk_device }}1"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+
+- name: Persistently Mount Partition 2
+  mount:
+    path: "{{ part2_mount }}"
+    src: "{{ datadisk_device }}2"
+    fstype: ext4
+    opts: defaults
+    state: mounted

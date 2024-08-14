@@ -1,0 +1,39 @@
+---
+- name: Install Apache Package
+  yum:
+    name: "{{ apache_package }}"
+    state: present
+
+#- name: Ensure the index files exist on the Ansible controller
+#  local_action:
+#     module: copy
+#     content: "{{ item.fqdn }}"
+#     dest: "/tmp/{{ item.name }}"
+#  loop: "{{ index_files }}"
+
+- name: Create Index Files on Controller
+  copy:
+    content: "{{ item.fqdn }}"
+    dest: "/tmp/{{ item.name }}"
+  loop: "{{ index_files }}"
+  delegate_to: localhost
+  become: no  # Ensure sudo is not used
+
+- name: Deploy Index Files to Web Nodes
+  copy:
+    src: "/tmp/{{ item.name }}"
+    dest: "{{ web_root }}/index.html"
+  loop: "{{ index_files }}"
+  when: inventory_hostname in item.fqdn
+
+- name: Configure Index File Permissions
+  file:
+    path: "{{ web_root }}/index.html"
+    mode: '0444'
+
+- name: Manage Apache Service
+  service:
+    name: "{{ apache_package }}"
+    state: started
+    enabled: true
+  notify: Restart Apache

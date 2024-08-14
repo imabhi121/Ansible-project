@@ -1,0 +1,18 @@
+---
+- name: Capture and display package version
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+
+  tasks:
+    - name: Get package information
+      package_facts:
+        manager: auto
+
+    - name: List installed packages
+      debug:
+        var: packages
+
+    - name: Display the version of the setup package
+      debug:
+        msg: >
+          Setup package version is {{ packages['setup'][0].version }}

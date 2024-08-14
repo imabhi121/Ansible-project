@@ -1,0 +1,14 @@
+---
+- name: Check for n01650117 existence
+  hosts: linux
+  become: true
+
+  tasks:
+    - name: Check user information
+      command: cat /etc/passwd
+      register: users
+
+    - name: Display servers with this user
+      debug:
+        msg: "This server has the user n01650117"
+      when: users.stdout.find('n01650117') != -1

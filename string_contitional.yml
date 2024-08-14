@@ -1,0 +1,13 @@
+---
+- name: Add string to file based on RHEL and kernel version
+  hosts: linux
+  become: true
+
+  tasks:
+    - name: Add string if conditions are met
+      blockinfile:
+        path: /tmp/conditional
+        block: "This is my CentOS VM"
+      when: ansible_distribution == 'RedHat' and
+            ansible_distribution_version == '8.2' and
+            ansible_kernel == '4.18.0-193.el8.x86_64'

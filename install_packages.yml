@@ -1,0 +1,11 @@
+---
+- name: Install packages using host variables
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+
+  tasks:
+    - name: Install specified packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"

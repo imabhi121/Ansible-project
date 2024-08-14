@@ -1,0 +1,37 @@
+---
+- name: Install bind and evolution packages using host variables
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+
+  vars_files:
+    - var.yml
+
+  tasks:
+    - name: Install bind package
+      dnf:
+        name: "{{ package1 }}"
+        state: present
+      register: bind_output
+
+    - name: Install evolution package
+      dnf:
+        name: "{{ package2 }}"
+        state: present
+      register: evolution_output
+
+    - name: Display bind package installation output
+      debug:
+        var: bind_output
+
+    - name: Display evolution package installation output
+      debug:
+        var: evolution_output
+
+    - name: Display names of installed packages
+      debug:
+        msg:  >
+          Installed packages:
+          Bind:
+          {{ bind_output.results | join('\n  - ') }}
+          Evolution:
+          {{ evolution_output.results | join('\n  - ') }}

@@ -1,0 +1,7 @@
+---
+locfile_path: /tmp/locfile
+locfile_dest: /tmp/locfile
+emptyfile_path: ~/emptyfile
+file_owner: n01650117
+file_group: root
+file_mode: '0444'

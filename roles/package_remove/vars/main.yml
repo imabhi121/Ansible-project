@@ -1,0 +1,5 @@
+---
+remove_packages:
+  - rsync
+  - ldap-utils
+  - nis

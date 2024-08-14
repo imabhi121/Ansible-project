@@ -1,0 +1,35 @@
+---
+- name: Manage users and groups with external variables
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+  vars_files:
+    - vars/userinfo.yml
+
+  tasks:
+    - name: Create group group100
+      ansible.builtin.group:
+        name: "{{ grouplist1 }}"
+        state: present
+
+    - name: Create group group200
+      ansible.builtin.group:
+        name: "{{ grouplist2 }}"
+        state: present
+
+    - name: Create user user100 with UID 2800 and supplementary membership to group100
+      ansible.builtin.user:
+        name: "{{ userlist1 }}"
+        uid: "{{ uid1 }}"
+        groups: "{{ grouplist1 }}"
+        append: yes
+        state: present
+
+    - name: Create user user200 with UID 2900, shell /bin/bash, home directory /home/user200, and supplementary membership to group200
+      ansible.builtin.user:
+        name: "{{ userlist2 }}"
+        uid: "{{ uid2 }}"
+        shell: /bin/bash
+        home: "/home/{{ userlist2 }}"
+        groups: "{{ grouplist2 }}"
+        append: yes
+        state: present

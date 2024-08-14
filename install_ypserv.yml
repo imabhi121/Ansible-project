@@ -1,0 +1,11 @@
+---
+- name: Install ypserv package using group variables
+  hosts: linux
+  become: true
+
+  tasks:
+    - name: Install specified packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"

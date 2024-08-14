@@ -1,0 +1,59 @@
+---
+- name: Establish cloudadmins Group
+  group:
+    name: cloudadmins
+    state: present
+
+- name: Provision User Accounts
+  user:
+    name: "{{ item }}"
+    groups: cloudadmins,wheel
+    state: present
+    generate_ssh_key: yes
+    ssh_key_file: /home/{{ item }}/.ssh/id_rsa
+  loop:
+    - user100
+    - user200
+    - user300
+
+- name: Set Permissions for SSH Directory
+  file:
+    path: /home/{{ item }}/.ssh
+    state: directory
+    mode: '0700'
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop:
+    - user100
+    - user200
+    - user300
+
+- name: Secure SSH Private Key
+  file:
+    path: /home/{{ item }}/.ssh/id_rsa
+    state: file
+    mode: '0600'
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop:
+    - user100
+    - user200
+    - user300
+
+- name: Set Permissions for SSH Public Key
+  file:
+    path: /home/{{ item }}/.ssh/id_rsa.pub
+    state: file
+    mode: '0644'
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop:
+    - user100
+    - user200
+    - user300
+
+- name: Retrieve Private Key for user100
+  fetch:
+    src: /home/user100/.ssh/id_rsa
+    dest: ./user100_id_rsa
+    flat: yes

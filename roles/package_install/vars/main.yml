@@ -1,0 +1,6 @@
+---
+install_packages:
+  - cifs-utils
+  - nfs-utils
+  - audit
+  - chrony

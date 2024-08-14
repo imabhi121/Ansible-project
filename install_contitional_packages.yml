@@ -1,0 +1,23 @@
+---
+- name: Install packages if / filesystem has enough space
+  hosts: n01650117-c-vm-0.eastus.cloudapp.azure.com
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: Gather mount facts
+      setup:
+        gather_subset:
+          - hardware
+
+    - name: Set fact if / filesystem has 2GB free space
+      set_fact:
+        has_sufficient_space: >
+          {{ ansible_mounts | selectattr('mount', 'equalto', '/') | selectattr('size_available', 'ge', 2 * 1024 * 1024 * 1024) | list | length > 0 }}
+
+    - name: Install packages if / has sufficient free space
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ packages }}"
+      when: has_sufficient_space | default(false)
